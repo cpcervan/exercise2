@@ -158,13 +158,13 @@ function main() {
     var imagedata = context.createImageData(w,h);
  
     // Define a rectangle in 2D with colors and coords at corners
-    var ulc = new Color(255,0,0,255); // upper left corner color: red
-    var urc = new Color(0,255,0,255); // upper right corner color: green
-    var llc = new Color(0,0,255,255); // lower left corner color: blue
-    var lrc = new Color(0,0,0,255); // lower right corner color: black
+    var ulc = new Color(0,255,255,255); // upper left corner color: cyan
+    var urc = new Color(255,0,255,255); // upper right corner color: magenta
+    var llc = new Color(255,255,0,255); // lower left corner color: yellow
+    //var lrc = new Color(255,0,0,75); // lower right corner color: pink
     var ulx = 50, uly = 50; // upper left corner position
-    var urx = 200, ury = 50; // upper right corner position
-    var llx = 50, lly = 150; // lower left corner position
+    var urx = 500, ury = 50; // upper right corner position
+    var llx = 50, lly = 250; // lower left corner position
     var lrx = 200, lry = 150; // lower right corner position
     
     // set up the vertical interpolation
@@ -172,7 +172,7 @@ function main() {
     var rc = urc.clone();  // right color
     var vDelta = 1 / (lly-uly); // norm'd vertical delta
     var lcDelta = llc.clone().subtract(ulc).scale(vDelta); // left vert color delta
-    var rcDelta = lrc.clone().subtract(urc).scale(vDelta); // right vert color delta
+    //var rcDelta = lrc.clone().subtract(urc).scale(vDelta); // right vert color delta
     
     // set up the horizontal interpolation
     var hc = new Color(); // horizontal color
@@ -180,15 +180,18 @@ function main() {
     var hcDelta = new Color(); // horizontal color delta
     
     // do the interpolation
+    var xMax = urx;
     for (var y=uly; y<=lly; y++) {
         hc.copy(lc); // begin with the left color
         hcDelta.copy(rc).subtract(lc).scale(hDelta); // reset horiz color delta
-        for (var x=ulx; x<=urx; x++) {
+        var slope = (lly - uly) / (urx - ulx);
+        for (var x=ulx; x<=xMax; x++) {
             drawPixel(imagedata,x,y,hc);
             hc.add(hcDelta);
         } // end horizontal
         lc.add(lcDelta);
-        rc.add(rcDelta);
+        xMax -= 1/slope;
+        //rc.add(rcDelta);
     } // end vertical
     
     context.putImageData(imagedata, 0, 0); // display the image in the context
